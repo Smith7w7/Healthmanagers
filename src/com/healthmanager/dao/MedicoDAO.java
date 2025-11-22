@@ -32,7 +32,8 @@ public class MedicoDAO {
 
     // READ - Por CMP
     public Medico buscarPorCmp(String cmp) {
-        String sql = "SELECT * FROM medicos WHERE cmp = ?";
+        String sql = "SELECT m.*, e.nombre AS especialidad_nombre FROM medicos m " +
+                     "JOIN especialidades e ON m.especialidad_id = e.id WHERE m.cmp = ?";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setString(1, cmp);
             ResultSet rs = stmt.executeQuery();
@@ -44,7 +45,7 @@ public class MedicoDAO {
                     rs.getString("apellido"),
                     rs.getDate("fecha_nacimiento"),
                     rs.getString("telefono"),
-                    rs.getString("especialidad"),
+                    rs.getString("especialidad_nombre"),
                     "8am-6pm"
                 );
             }
@@ -57,7 +58,8 @@ public class MedicoDAO {
     // READ - Listar todos
     public List<Medico> listarTodos() {
         List<Medico> medicos = new ArrayList<>();
-        String sql = "SELECT * FROM medicos ORDER BY apellido, nombre";
+        String sql = "SELECT m.*, e.nombre AS especialidad_nombre FROM medicos m " +
+                     "JOIN especialidades e ON m.especialidad_id = e.id ORDER BY m.apellido, m.nombre";
         try (Statement stmt = conexion.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -68,7 +70,7 @@ public class MedicoDAO {
                     rs.getString("apellido"),
                     rs.getDate("fecha_nacimiento"),
                     rs.getString("telefono"),
-                    rs.getString("especialidad"),
+                    rs.getString("especialidad_nombre"),
                     "8am-6pm"
                 );
                 medicos.add(m);
