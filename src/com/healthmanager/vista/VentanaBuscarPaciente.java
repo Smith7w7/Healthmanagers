@@ -1,7 +1,7 @@
 package com.healthmanager.vista;
 
 import com.healthmanager.modelo.Paciente;
-import com.healthmanager.dao.PacienteDAO;
+import com.healthmanager.controlador.PacienteController;
 import javax.swing.*;
 import java.awt.*;
 
@@ -9,7 +9,7 @@ public class VentanaBuscarPaciente extends JDialog {
     private JTextField txtDni;
     private JButton btnBuscar;
     private JTextArea textResultado;
-    private PacienteDAO pacienteDAO;
+    private PacienteController pacienteController;
 
     public VentanaBuscarPaciente(JFrame parent) {
         super(parent, "Buscar Paciente", true);
@@ -17,7 +17,7 @@ public class VentanaBuscarPaciente extends JDialog {
         setLocationRelativeTo(parent);
         setLayout(new BorderLayout());
 
-        pacienteDAO = new PacienteDAO();
+        pacienteController = new PacienteController();
 
         // Panel búsqueda
         JPanel panelBusqueda = new JPanel();
@@ -46,17 +46,19 @@ public class VentanaBuscarPaciente extends JDialog {
             return;
         }
 
-        Paciente paciente = pacienteDAO.buscarPorDni(dni);
+        Paciente paciente = pacienteController.buscarPaciente(dni);
         if (paciente != null) {
             StringBuilder sb = new StringBuilder();
             sb.append("=== INFORMACIÓN DEL PACIENTE ===\n");
-            sb.append("DNI: ").append(paciente.getDni()).append("\n");
-            sb.append("Nombre: ").append(paciente.getNombre()).append(" ").append(paciente.getApellido()).append("\n");
-            sb.append("Edad: ").append(paciente.calcularEdad()).append(" años\n");
-            sb.append("Género: ").append(paciente.getGenero()).append("\n");
-            sb.append("Teléfono: ").append(paciente.getTelefono()).append("\n");
-            sb.append("Dirección: ").append(paciente.getDireccion()).append("\n");
-            sb.append("Grupo Sanguíneo: ").append(paciente.getGrupoSanguineo()).append("\n");
+            sb.append("DNI: ").append(paciente.getDni() != null ? paciente.getDni() : "No especificado").append("\n");
+            sb.append("Nombre: ").append(paciente.getNombre() != null ? paciente.getNombre() : "").append(" ")
+              .append(paciente.getApellido() != null ? paciente.getApellido() : "").append("\n");
+            int edad = paciente.calcularEdad();
+            sb.append("Edad: ").append(edad >= 0 ? edad + " años" : "No especificada").append("\n");
+            sb.append("Género: ").append(paciente.getGenero() != null ? paciente.getGenero() : "No especificado").append("\n");
+            sb.append("Teléfono: ").append(paciente.getTelefono() != null ? paciente.getTelefono() : "No especificado").append("\n");
+            sb.append("Dirección: ").append(paciente.getDireccion() != null ? paciente.getDireccion() : "No especificada").append("\n");
+            sb.append("Grupo Sanguíneo: ").append(paciente.getGrupoSanguineo() != null ? paciente.getGrupoSanguineo() : "No especificado").append("\n");
             textResultado.setText(sb.toString());
         } else {
             textResultado.setText("No se encontró paciente con ese DNI");

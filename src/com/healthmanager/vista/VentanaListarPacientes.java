@@ -1,7 +1,7 @@
 package com.healthmanager.vista;
 
 import com.healthmanager.modelo.Paciente;
-import com.healthmanager.dao.PacienteDAO;
+import com.healthmanager.controlador.PacienteController;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -12,7 +12,7 @@ public class VentanaListarPacientes extends JDialog {
     private DefaultTableModel modeloTabla;
     private JTextField txtBuscar;
     private JButton btnBuscar, btnEliminar, btnEditar;
-    private PacienteDAO pacienteDAO;
+    private PacienteController pacienteController;
 
     public VentanaListarPacientes(JFrame parent) {
         super(parent, "Lista de Pacientes", true);
@@ -20,7 +20,7 @@ public class VentanaListarPacientes extends JDialog {
         setLocationRelativeTo(parent);
         setLayout(new BorderLayout());
 
-        pacienteDAO = new PacienteDAO();
+        pacienteController = new PacienteController();
 
         // Panel superior con búsqueda
         JPanel panelSuperior = new JPanel();
@@ -55,17 +55,18 @@ public class VentanaListarPacientes extends JDialog {
 
     private void cargarPacientes() {
         modeloTabla.setRowCount(0);
-        List<Paciente> pacientes = pacienteDAO.listarTodos();
+        List<Paciente> pacientes = pacienteController.listarPacientes();
         
         for (Paciente p : pacientes) {
+            int edad = p.calcularEdad();
             Object[] fila = {
-                p.getDni(),
-                p.getNombre(),
-                p.getApellido(),
-                p.calcularEdad(),
-                p.getGenero(),
-                p.getTelefono(),
-                p.getDireccion()
+                p.getDni() != null ? p.getDni() : "",
+                p.getNombre() != null ? p.getNombre() : "",
+                p.getApellido() != null ? p.getApellido() : "",
+                edad >= 0 ? edad : "N/A",
+                p.getGenero() != null ? p.getGenero() : "",
+                p.getTelefono() != null ? p.getTelefono() : "",
+                p.getDireccion() != null ? p.getDireccion() : ""
             };
             modeloTabla.addRow(fila);
         }
@@ -82,7 +83,15 @@ public class VentanaListarPacientes extends JDialog {
             JOptionPane.showMessageDialog(this, "Seleccione un paciente", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        JOptionPane.showMessageDialog(this, "Funcionalidad en desarrollo");
+        
+        String dni = (String) modeloTabla.getValueAt(fila, 0);
+        
+        // Abrir ventana de edición (modal)
+        VentanaEditarPaciente ventanaEditar = new VentanaEditarPaciente((JFrame) getParent(), dni);
+        
+        // Recargar la tabla después de cerrar la ventana de edición
+        // Como es una ventana modal, el código continúa después de que se cierra
+        cargarPacientes();
     }
 
     private void eliminar() {
@@ -96,11 +105,11 @@ public class VentanaListarPacientes extends JDialog {
         int confirm = JOptionPane.showConfirmDialog(this, "¿Confirma eliminar?", "Confirmar", JOptionPane.YES_NO_OPTION);
         
         if (confirm == JOptionPane.YES_OPTION) {
-            if (pacienteDAO.eliminar(dni)) {
+            if (pacienteController.eliminarPaciente(dni)) {
                 JOptionPane.showMessageDialog(this, "Paciente eliminado", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 cargarPacientes();
             } else {
-                JOptionPane.showMessageDialog(this, "Error al eliminar", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al eliminar. El paciente puede tener citas asociadas.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

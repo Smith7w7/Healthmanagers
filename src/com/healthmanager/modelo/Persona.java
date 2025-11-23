@@ -24,6 +24,9 @@ public abstract class Persona {
     public abstract void mostrarInfo();
 
     public int calcularEdad() {
+        if (fechaNacimiento == null) {
+            return -1; // Retorna -1 si no hay fecha de nacimiento
+        }
         Calendar hoy = Calendar.getInstance();
         Calendar nacimiento = Calendar.getInstance();
         nacimiento.setTime(fechaNacimiento);

@@ -1,0 +1,75 @@
+package com.healthmanager.vista;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class VentanaMenuPacientes extends JDialog {
+    
+    public VentanaMenuPacientes(JFrame parent) {
+        super(parent, "Gestión de Pacientes", true);
+        setSize(600, 400);
+        setLocationRelativeTo(parent);
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(240, 245, 250));
+        panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(15, 0, 15, 0);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+
+        // Título
+        JLabel lblTitulo = new JLabel("Gestión de Pacientes");
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTitulo.setForeground(new Color(25, 118, 210));
+        gbc.gridy = 0;
+        panel.add(lblTitulo, gbc);
+
+        // Opciones
+        JButton btnRegistrar = crearBoton("➕ Registrar Nuevo Paciente", new Color(76, 175, 80));
+        btnRegistrar.addActionListener(e -> new VentanaRegistroPaciente(parent));
+        gbc.gridy = 1;
+        panel.add(btnRegistrar, gbc);
+
+        JButton btnBuscar = crearBoton("🔍 Buscar Paciente", new Color(33, 150, 243));
+        btnBuscar.addActionListener(e -> new VentanaBuscarPaciente(parent));
+        gbc.gridy = 2;
+        panel.add(btnBuscar, gbc);
+
+        JButton btnListar = crearBoton("📋 Listar Todos los Pacientes", new Color(255, 152, 0));
+        btnListar.addActionListener(e -> new VentanaListarPacientes(parent));
+        gbc.gridy = 3;
+        panel.add(btnListar, gbc);
+
+        JButton btnCerrar = crearBoton("❌ Cerrar", new Color(200, 200, 200));
+        btnCerrar.addActionListener(e -> dispose());
+        gbc.gridy = 4;
+        panel.add(btnCerrar, gbc);
+
+        add(panel);
+        setVisible(true);
+    }
+
+    private JButton crearBoton(String texto, Color color) {
+        JButton btn = new JButton(texto);
+        btn.setFont(new Font("Arial", Font.BOLD, 13));
+        btn.setForeground(Color.WHITE);
+        btn.setBackground(color);
+        btn.setOpaque(true);
+        btn.setBorderPainted(false);
+        btn.setPreferredSize(new Dimension(0, 50));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) {
+                btn.setBackground(color.brighter());
+            }
+            public void mouseExited(MouseEvent evt) {
+                btn.setBackground(color);
+            }
+        });
+        return btn;
+    }
+}
